@@ -1,0 +1,109 @@
+<odoo>
+    <record id="view_convoyeur_tree" model="ir.ui.view">
+        <field name="name">convoyeur.tree</field>
+        <field name="model">collect.convoyeur</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="phone"/>
+                <field name="email"/>
+                <field name="address"/>
+                <field name="user_type"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_convoyeur_form" model="ir.ui.view">
+        <field name="name">convoyeur.form</field>
+        <field name="model">collect.convoyeur</field>
+        <field name="arch" type="xml">
+            <form string="Convoyeur">
+                <!-- Header with status buttons and actions -->
+                <header>
+                    <!-- Add buttons or statusbar here if needed in the future -->
+                </header>
+
+                <sheet>
+                    <div class="d-flex justify-content-between align-items-center w-100 mb-2">
+                        <!-- Left side: Title and job -->
+                        <div class="oe_title me-3 flex-grow-1">
+                            <h1 class="d-flex align-items-center">
+                                <field name="name" placeholder="Nom complet" required="1" style="font-size: min(4vw, 2.6rem);" />
+                            </h1>
+                            <h2>
+                                <field name="job_title" invisible="1"/>
+                                <field name="user_type" widget="radio" options="{'horizontal': true}"/>
+                            </h2>
+                        </div>
+
+                        <!-- Right side: Avatar -->
+                        <div class="o_employee_avatar text-end">
+                            <field name="profile_image" widget="image" class="oe_avatar"/>
+                        </div>
+                    </div>
+
+
+                    <group>
+                        <group>
+                            <field name="email"/>
+                            <field name="parent_id"/>
+                            <field name="num_unique"/>
+                        </group>
+                        <group>
+                            <field name="phone" widget="phone"/>
+                            <field name="mobile" widget="phone"/>
+                        </group>
+                    </group>
+
+                    <!-- Notebook (Tabs) structure -->
+                    <notebook>
+                        <page name="public" string="Informations Professionnelles">
+                            <div id="o_work_employee_container" class="d-lg-flex">
+                                <div id="o_work_employee_main" class="flex-grow-1">
+                                    <group string="Location">
+                                        <field name="address" context="{'show_address': 1}" options="{'highlight_first_line': True}"/>
+                                    </group>
+                                </div>
+                            </div>
+                        </page>
+                        <page string="Renseignements Personnels">
+                            <group>
+                                <group string="Contact Privé">
+                                    <label for="private_street" string="Private Address"/>
+                                    <div class="o_address_format">
+                                        <field name="private_street" placeholder="Rue..." class="o_address_street"/>
+                                        <field name="private_street2" placeholder="Rue 2..." class="o_address_street"/>
+                                        <field name="private_city" placeholder="Ville" class="o_address_city"/>
+                                        <field name="private_state_id" class="o_address_state" placeholder="État" options="{'no_open': True, 'no_quick_create': True}"/>
+                                        <field name="private_zip" placeholder="Code postal" class="o_address_zip"/>
+                                        <field name="private_country_id" placeholder="Pays" class="o_address_country" options="{&quot;no_open&quot;: True, &quot;no_create&quot;: True}"/>
+                                    </div>
+                                        <field name="private_email" placeholder="e.g. myprivateemail@example.com"/>
+                                        <field name="private_phone" widget="phone"/>
+                                    </group>
+                                    <group string="Citoyenneté">
+                                        <field name="country_id" options="{&quot;no_open&quot;: True, &quot;no_create&quot;: True}"/>
+                                        <field name="gender"/>
+                                        <field name="birthday"/>
+                                        <field name="place_of_birth"/>
+                                        <field name="marital"/>
+                                        <field name="children"/>
+                                    </group>
+                                    
+                                    <group string="Permis de conduire">
+                                        <field name="permis_no"/>
+                                        <field name="permis_expire"/>
+                                        <field name="has_conduire_permis" widget="work_permit_upload" filename="work_permit_name"/>
+                                    </group>
+                                </group>
+                            </page>
+                    </notebook>
+                </sheet>
+
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+
+</odoo>

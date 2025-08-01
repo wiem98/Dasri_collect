@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+  <t t-name="client_map_template" owl="1">
+    <div class="o_client_map_view" t-ref="map" style="height: 600px;"></div>
+  </t>
+</templates>

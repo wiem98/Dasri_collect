@@ -1,0 +1,61 @@
+<odoo>
+  <record id="view_collecte_contrat_form" model="ir.ui.view">
+  <field name="name">collecte.contrat.form</field>
+  <field name="model">collecte.contrat</field>
+  <field name="arch" type="xml">
+    <form string="Contrat de collecte">
+      <sheet>
+
+        <!-- 🧾 Informations client & contrat -->
+        <group string="Informations générales" col="2">
+          <field name="partner_id"/>
+          <field name="type_contrat"/>
+          <field name="duree_marche"/>
+          <field name="unite_duree"/>
+          <field name="montant_marche"/>
+        </group>
+
+        <!-- 📦 Volume & fréquence -->
+            <group col="2">
+        
+        <!-- 🧊 Colonne 1 : Volume & fréquence -->
+        <group string="Volume &amp; Fréquence de collecte">
+            <field name="frequence_collecte"/>
+            <field name="nbre_passage_semaine" />
+            <field name="quantite_estimee"/>
+        <field name="quantite_previsionnelle" readonly="1"/>
+        </group>
+
+        <!-- 💰 Colonne 2 : Tarification -->
+        <group string="Tarification">
+            <field name="prix_par_passage"/>
+            <field name="prix_kg"/>
+            <field name="seuil_annuel_kg"/>
+            <field name="appliquer_tarif_surplus"/>
+        </group>
+
+        </group>
+
+      </sheet>
+      <chatter/>
+    </form>
+  </field>
+</record>
+
+
+  <record id="view_collecte_contrat_list" model="ir.ui.view">
+    <field name="name">collecte.contrat.list</field>
+    <field name="model">collecte.contrat</field>
+    <field name="arch" type="xml">
+      <list string="Contrats">
+        <field name="partner_id"/>
+        <field name="type_contrat"/>
+        <field name="frequence_collecte"/>
+        <field name="quantite_previsionnelle"/>
+        <field name="prix_kg"/>
+        <field name="prix_par_passage"/>
+        <field name="seuil_annuel_kg"/>
+      </list>
+    </field>
+  </record>
+</odoo>

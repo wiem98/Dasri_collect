@@ -1,0 +1,264 @@
+<odoo>
+    <data>
+        <!-- List view for Bordereau de Suivi -->
+        <record id="view_tree_collect_bordereau" model="ir.ui.view">
+            <field name="name">collect.bordereau.tree</field>
+            <field name="model">collect.bordereau</field>
+            <field name="arch" type="xml">
+                <list string="Bordereaux de Suivi" default_order="group">
+                    <field name="name" string="Référence"/>
+                    <field name="num_registre" string="Numéro"/>
+                    <field name="partner_id" string="Nom de l'entreprise"/>
+                    <field name="transporteur_num" string="N° Unique du Transporteur"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="view_search_collect_bordereau" model="ir.ui.view">
+            <field name="name">collect.bordereau.search</field>
+            <field name="model">collect.bordereau</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="name"/>
+                    <field name="group"/>
+                    <filter string="Group by Groupe" name="group_by_group" context="{'group_by': 'group'}"/>
+                </search>
+            </field>
+        </record>
+
+        <!-- Form view for Bordereau de Suivi -->
+        <record id="view_form_collect_bordereau" model="ir.ui.view">
+            <field name="name">collect.bordereau.form</field>
+            <field name="model">collect.bordereau</field>
+            <field name="arch" type="xml">
+                <form string="Bordereau de Suivi" class="o_form_project_project">
+                    <header>
+                        <!-- Bouton Producteur -->
+                        <button name="action_sign_producteur"
+                                type="object"
+                                string="Valider Producteur"
+                                class="btn-primary"
+                                invisible="signature_producteur == False or state != 'draft'"/>
+
+                        <!-- Bouton Transporteur -->
+                        <button name="action_sign_transporteur"
+                                type="object"
+                                string="Valider Transporteur"
+                                class="btn-primary"
+                                invisible="signature_transporteur == False or state != 'producteur_signed'"/>
+
+                        <!-- Bouton Opérateur -->
+                        <button name="action_sign_operateur"
+                                type="object"
+                                string="Valider Opérateur"
+                                class="btn-primary"
+                                invisible="signature_operateur == False or state != 'transporteur_signed'"/>
+
+                        <!-- Barre de statut -->
+                        <field name="state" widget="statusbar" statusbar_visible="draft"/>
+                    </header>
+
+                    <sheet>
+                        <!-- Top info -->
+                        <div>
+                            <h1>
+                                <field name="denomination_dechet" readonly="1"/>
+                            </h1>
+                        </div>
+
+                        <group col="2">
+                            <group>
+                                <field name="num_registre"/>
+                            </group>
+                            <group>
+                                <field name="partner_id" string="Nom de l'entreprise"/>
+                            </group>
+                        </group>
+
+                        <group col="2">
+                            <field name="immatriculation"/>
+                            <field name="poids_facture"/>
+                        </group>
+
+                        <notebook>
+                            <!-- Collecteurs -->
+                            <page string="Collecteurs">
+                                <field name="collecteur_line_ids">
+                                    <list editable="bottom">
+                                        <field name="type"/>
+                                        <field name="quantite"/>
+                                    </list>
+                                </field>
+                            </page>
+                            <!-- Conteneurs -->
+                            <page string="Conteneurs">
+                                <field name="conteneur_line_ids">
+                                    <list editable="bottom">
+                                        <field name="type"/>
+                                        <field name="quantite"/>
+                                    </list>
+                                </field>
+                            </page>
+                            <!-- Producteur -->
+                            <page string="Producteur">
+                                <group>
+                                    <field name="producteur_num"/>
+                                    <field name="producteur_heure" widget="float_time"/>
+                                    <field name="producteur_date_enlevement"/>
+                                    <field name="producteur_info" readonly="1"/>
+                                    <field name="signature_producteur" widget="signature"/>
+                                </group>
+                            </page>
+                            <!-- Transporteur -->
+                            <page string="Transporteur">
+                                <group>
+                                    <field name="transporteur_num"/>
+                                    <field name="transporteur_heure" widget="float_time"/>
+                                    <field name="transporteur_date_prise"/>
+                                    <field name="transporteur_info"/>
+                                    <field name="signature_transporteur" widget="signature"/>
+                                </group>
+                            </page>
+                            <!-- Opérateur -->
+                            <page string="Opérateur">
+                                <group>
+                                    <field name="operateur_num"/>
+                                    <field name="operateur_heure" widget="float_time"/>
+                                    <field name="operateur_date_reception"/>
+                                    <field name="operateur_info"/>
+                                    <field name="signature_operateur" widget="signature"/>
+                                </group>
+                            </page>
+                            <!-- Observations -->
+                            <page string="Observations">
+                                <group>
+                                    <field name="observations"/>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <chatter/>
+                </form>
+            </field>
+        </record>
+
+        <!-- Kanban view for borderau de suivi -->
+        <record id="view_kanban_collect_bordereau" model="ir.ui.view">
+            <field name="name">collect.bordereau.kanban</field>
+            <field name="model">collect.bordereau</field>
+            <field name="arch" type="xml">
+                <kanban class="o_kanban_small_column">
+                    <field name="name"/>
+                    <field name="num_registre"/>
+                    <field name="partner_id"/>
+                    <field name="transporteur_num"/>
+                    <field name="producteur_date_enlevement"/>
+                    <field name="denomination_dechet"/>
+                    
+                    <templates>
+                        <t t-name="card" class="flex-row">
+                            <aside class="d-flex align-items-center me-2">
+                                <i class="fa fa-ticket fa-5x" aria-hidden="true" title="Ticket"></i>
+                            </aside>
+                            <main>
+                                <div>
+                                    <t t-if="record.name.value">
+                                        <field class="fw-bolder fs-5" name="name"/>
+                                    </t>
+                                </div>
+                                <div class="small">
+                                    <t t-if="record.denomination_dechet.value">Dénomination du déchet : <field name="denomination_dechet"/></t>
+                                </div>
+                                <div class="small">
+                                    <i class="fa fa-barcode" title="Numéro"/>
+                                    <t t-if="record.num_registre.value">Numéro : <field name="num_registre"/></t>
+                                </div>
+                                <div class="small">
+                                    <i class="fa fa-building" title="Entreprise"/> 
+                                    <t t-if="record.partner_id.value">Nom de l'entreprise : <field name="partner_id"/></t>
+                                </div>
+                                <footer class="pt-0 mt-0 pt-0 mt-0 justify-content-end">
+                                    <div class="d-flex fs-6">
+                                        <field name="activity_ids" widget="kanban_activity" class="ms-2"/>
+                                    </div>
+                            </footer>
+                            </main>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <!-- List view for numeros de registre -->
+        <record id="view_tree_collect_numero_registre" model="ir.ui.view">
+            <field name="name">collect.numero.registre.tree</field>
+            <field name="model">collect.numero.registre</field>
+            <field name="arch" type="xml">
+                <list string="Numéros de registre">
+                    <field name="name"/>
+                    <field name="numero"/>
+                    <field name="description"/>
+                    <field name="user_id"/>
+                    <field name="is_generated"/>
+                </list>
+            </field>
+        </record>
+
+
+        <!-- Form view for numeros de registre -->
+        <record id="view_form_collect_numero_registre" model="ir.ui.view">
+            <field name="name">collect.numero.registre</field>
+            <field name="model">collect.numero.registre</field>
+            <field name="arch" type="xml">
+                <form string="Numéro de registre (Bordereaux de Suivi)" class="o_form_project_project">
+                    <header>
+                        <!-- Statusbar -->
+                        <field name="state" widget="statusbar" statusbar_visible="draft,active,done"/>
+
+                        <!-- Activate button (only in draft) -->
+                        <button name="action_activate"
+                                type="object"
+                                string="Activer"
+                                class="btn-primary"
+                                invisible="is_generated == True or state != 'draft' or id == False"/>
+
+                        <!-- Cancel button (only in active) -->
+                        <button name="action_cancel"
+                                type="object"
+                                string="Annuler"
+                                class="btn-secondary"
+                                invisible="state != 'active' or is_generated == True "/>
+
+                        <!-- Cancel button (only in active) -->
+                        <button name="action_done"
+                                type="object"
+                                string="Terminé"
+                                class="btn-secondary"
+                                invisible="state != 'active' or is_generated == True "/>
+
+                        <!-- draft button (only in cancelled) -->
+                        <button name="action_draft"
+                                type="object"
+                                string="Brouillon"
+                                class="btn-secondary"
+                                invisible="state != 'cancelled' or is_generated == True "/>
+                    </header>
+                    <sheet>
+                        <!-- Top info -->
+                        <div>
+                            <h1>
+                                <field name="numero" string="Numéro"/>
+                            </h1>
+                        </div>
+
+                        <group col="2">
+                            <field name="nbr_copie" invisible="is_generated == True"/>
+                            <field name="user_id"/>
+                        </group>
+                    </sheet>
+                    <chatter/>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>

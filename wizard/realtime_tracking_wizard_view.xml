@@ -1,0 +1,31 @@
+<odoo>
+    <record id="view_realtime_tracking_wizard" model="ir.ui.view">
+        <field name="name">wizard.traccar.realtime.tracking.form</field>
+        <field name="model">wizard.traccar.realtime.tracking</field>
+        <field name="arch" type="xml">
+            <form string="Suivi en Temps Réel du Dispositif">
+                <group>
+                <field name="device_realtime_track_id"/>
+                </group>
+                <footer>
+                    <button name="action_start_tracking" string="Suivre Maintenant" type="object" class="btn-primary"/>
+                    <button string="Annuler" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <act_window id="action_realtime_tracking_wizard"
+                name="Suivi en Temps Réel"
+                res_model="wizard.traccar.realtime.tracking"
+                view_mode="form"
+                target="new"/>
+
+     <record id="action_realtime_tracking_wizard" model="ir.actions.act_window">
+    <field name="name">Suivi Temps Réel</field>
+    <field name="res_model">wizard.traccar.realtime.tracking</field>
+    <field name="view_mode">form</field>
+    <field name="target">new</field>
+</record>
+
+</odoo>

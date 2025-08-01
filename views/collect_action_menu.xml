@@ -1,0 +1,77 @@
+<odoo>
+
+    <!-- Client action -->
+    <record id="action_collect_clients" model="ir.actions.act_window">
+        <field name="name">Clients</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="view_id" ref="base.res_partner_kanban_view"/>
+        <field name="domain">[('function', '=', 'Client')]</field>
+        <field name="context">{'is_client_context': True, 'default_function': 'Client'}</field>
+    </record>
+
+    <!-- Bordereau action -->
+    <record id="action_collect_bordereau" model="ir.actions.act_window">
+        <field name="name">Bordereau de suivi</field>
+        <field name="res_model">collect.bordereau</field>
+        <field name="view_mode">list,kanban,form</field>
+        <field name="context">{'group_by': 'group'}</field>
+        <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Créez un nouveau bordereau de suivi pour la collecte des déchets.
+                </p>
+        </field>
+    </record>
+
+    <!-- Utilisateurs action -->
+    <record id="action_collect_convoyeur" model="ir.actions.act_window">
+        <field name="name">Utilisateurs</field>
+        <field name="res_model">collect.convoyeur</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Créez un nouveau Utilisateur.
+                </p>
+        </field>
+    </record>
+
+    <!-- numeros de registre action -->
+    <record id="action_collect_numero_registre" model="ir.actions.act_window">
+        <field name="name">Numéro de Registre</field>
+        <field name="res_model">collect.numero.registre</field>
+        <field name="view_mode">list,form</field>
+         <field name="context">{'group_by': 'group'}</field>
+        <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Créez un nouveau Numéro de Registre.
+                </p>
+        </field>
+    </record>
+    <!-- Action Contrats de Collecte -->
+<record id="action_collecte_contrat" model="ir.actions.act_window">
+    <field name="name">Contrats de Collecte</field>
+    <field name="res_model">collecte.contrat</field>
+    <field name="view_mode">list,form</field>
+    <field name="help" type="html">
+        <p class="o_view_nocontent_smiling_face">
+            Créez un nouveau contrat de collecte pour un client.
+        </p>
+    </field>
+</record>
+ <!-- ========== Action for Monthly Planning ========== -->
+  <record id="action_collecte_planning_mensuel" model="ir.actions.act_window">
+    <field name="name">Plannings Mensuels</field>
+    <field name="res_model">collecte.planning_mensuel</field>
+    <field name="view_mode">list,form</field>
+    <field name="help" type="html">
+      <p>Générez automatiquement un planning de collecte pour tous les contrats actifs dans un mois donné.</p>
+    </field>
+  </record>
+
+  <!-- ========== Action for Planning Lines (optional direct access) ========== -->
+  <record id="action_collecte_planning_ligne" model="ir.actions.act_window">
+    <field name="name">Toutes les Collectes</field>
+    <field name="res_model">collecte.planning_ligne</field>
+    <field name="view_mode">list,calendar</field>
+  </record>
+</odoo>

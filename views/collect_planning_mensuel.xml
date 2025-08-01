@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+  <!-- ========== Monthly Planning Form View ========== -->
+  <record id="view_collecte_planning_mensuel_form" model="ir.ui.view">
+    <field name="name">collecte.planning_mensuel.form</field>
+    <field name="model">collecte.planning_mensuel</field>
+    <field name="arch" type="xml">
+      <form string="Planning Mensuel de Collecte">
+        <sheet>
+          <group>
+            <field name="name"/>
+            <field name="mois"/>
+            <field name="annee"/>
+            <field name="capacite_journaliere"/>
+            <field name="state" readonly="1"/>
+          </group>
+          <header>
+            <button name="action_generer_planning"
+        string="Générer le planning"
+        type="object"
+        class="btn-primary"/>
+
+          </header>
+          <notebook>
+            <page string="Lignes de Planning">
+              <field name="line_ids">
+                <list editable="bottom">
+                  <field name="date"/>
+                  <field name="partner_id"/>
+                  <field name="contrat_id"/>
+                  <field name="quantite"/>
+                </list>
+              </field>
+            </page>
+          </notebook>
+        </sheet>
+      </form>
+    </field>
+  </record>
+
+  <!-- ========== Monthly Planning Tree View ========== -->
+  <record id="view_collecte_planning_mensuel_tree" model="ir.ui.view">
+    <field name="name">collecte.planning_mensuel.tree</field>
+    <field name="model">collecte.planning_mensuel</field>
+    <field name="arch" type="xml">
+      <list>
+        <field name="name"/>
+        <field name="mois"/>
+        <field name="annee"/>
+        <field name="state"/>
+      </list>
+    </field>
+  </record>
+
+  <!-- ========== Planning Lines Tree View ========== -->
+  <record id="view_collecte_planning_ligne_tree" model="ir.ui.view">
+    <field name="name">collecte.planning_ligne.tree</field>
+    <field name="model">collecte.planning_ligne</field>
+    <field name="arch" type="xml">
+      <list>
+        <field name="date"/>
+        <field name="partner_id"/>
+        <field name="contrat_id"/>
+        <field name="quantite"/>
+      </list>
+    </field>
+  </record>
+
+  <!-- ========== Planning Lines Calendar View ========== -->
+  <record id="view_collecte_planning_ligne_calendar" model="ir.ui.view">
+    <field name="name">collecte.planning_ligne.calendar</field>
+    <field name="model">collecte.planning_ligne</field>
+    <field name="arch" type="xml">
+      <calendar string="Planning Collecte" date_start="date" color="partner_id">
+        <field name="partner_id"/>
+        <field name="quantite"/>
+      </calendar>
+    </field>
+  </record>
+
+ 
+
+
+
+</odoo>

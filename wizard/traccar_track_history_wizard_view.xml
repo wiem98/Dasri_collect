@@ -1,0 +1,30 @@
+<odoo>
+  <record id="view_traccar_track_history_wizard_form" model="ir.ui.view">
+    <field name="name">wizard.traccar.track.history.form</field>
+    <field name="model">wizard.traccar.track.history</field>
+    <field name="arch" type="xml">
+      <form string="Afficher l’historique GPS">
+        <group>
+          <field name="vehicle_id"/>
+          <field name="period"/>
+          <field name="date_from"/>
+          <field name="date_to"/>
+        </group>
+        <footer>
+          <button name="action_show_track"
+                  string="Afficher la carte"
+                  type="object"
+                  class="btn-primary"/>
+          <button string="Annuler" class="btn-secondary" special="cancel"/>
+        </footer>
+      </form>
+    </field>
+  </record>
+
+  <record id="action_traccar_track_history_popup" model="ir.actions.act_window">
+    <field name="name">Historique GPS</field>
+    <field name="res_model">wizard.traccar.track.history</field>
+    <field name="view_mode">form</field>
+    <field name="target">new</field> <!-- Important: modal popup -->
+  </record>
+</odoo>

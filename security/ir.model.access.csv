@@ -1,0 +1,15 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_collect_vehicle_user,access.collect.vehicle.user,fleet.model_fleet_vehicle,base.group_user,1,1,1,1
+access_wizard_traccar_device_details_user,wizard.traccar.device.details,model_wizard_traccar_device_details,,1,1,1,0
+access_wizard_traccar_track_history,wizard.traccar.track.history,model_wizard_traccar_track_history,,1,1,1,1
+access_collect_bordereau_user,access_collect_bordereau_user,model_collect_bordereau,base.group_user,1,1,1,1
+access_numero_registre_user,access_numero_registre_user,model_collect_numero_registre,base.group_user,1,1,1,1
+access_collecteur_user,access_collecteur_user,model_collect_collecteur_line,base.group_user,1,1,1,1
+access_conteneur_user,access_conteneur_user,model_collect_conteneur_line,base.group_user,1,1,1,1
+access_collect_convoyeur_admin,collect.convoyeur,model_collect_convoyeur,base.group_system,1,1,1,1
+access_confirmation_wizard,access.confirmation.wizard,model_confirmation_wizard,,1,1,1,1
+access_realtime_tracking_wizard,wizard.traccar.realtime.tracking,model_wizard_traccar_realtime_tracking,base.group_user,1,1,1,1
+access_res_partner_user,access.res.partner.user,base.model_res_partner,base.group_user,1,1,1,1
+access_collecte_contrat_user,access.collecte.contrat.user,model_collecte_contrat,base.group_user,1,1,1,1
+access_collecte_planning_mensuel_user,access.collecte.planning.mensuel.user,model_collecte_planning_mensuel,base.group_user,1,1,1,1
+access_collecte_planning_ligne_user,access.collecte.planning.ligne.user,model_collecte_planning_ligne,base.group_user,1,1,1,1

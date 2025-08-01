@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+  <t t-name="client_position_template" owl="1">
+    <div class="modal-body"> 
+      <div t-ref="map" style="height: 400px; width: 100%; margin-top: 1rem;"></div>
+    </div>
+    <footer class="modal-footer">
+      <button class="btn btn-primary" t-on-click="saveLocation">Save</button>
+      <button class="btn btn-secondary" t-on-click="cancel">Cancel</button>
+    </footer>
+  </t>
+</templates>

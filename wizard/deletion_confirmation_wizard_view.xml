@@ -1,0 +1,19 @@
+<odoo>
+    <record id="view_confirmation_wizard_form" model="ir.ui.view">
+        <field name="name">confirmation.wizard.form</field>
+        <field name="model">confirmation.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Confirm Deletion">
+                <sheet>
+                    <div class="alert alert-warning" role="alert">
+                        <field name="message" readonly="1"/>
+                    </div>
+                </sheet>
+                <footer>
+                    <button name="action_confirm" string="Confirm" type="object" class="btn-danger"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

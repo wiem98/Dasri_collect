@@ -1,0 +1,37 @@
+<odoo>
+    <record id="view_wizard_traccar_device_details_form" model="ir.ui.view">
+        <field name="name">wizard.traccar.device.details.form</field>
+        <field name="model">wizard.traccar.device.details</field>
+        <field name="arch" type="xml">
+            <form string="Traccar Device Details">
+                <sheet>
+                    <group string="Device Info">
+                        <field name="device_id" readonly="1"/>
+                        <field name="name" readonly="1"/>
+                        <field name="status" readonly="1"/>
+                        <field name="uniqueId" readonly="1"/>
+                        <field name="position_id" readonly="1"/>
+                    </group>
+
+                    <group string="Driver Info">
+                        <field name="driver_name" readonly="1"/>
+                    </group>
+
+                    <group string="Position Info">
+                        <field name="latitude" readonly="1"/>
+                        <field name="longitude" readonly="1"/>
+                        <field name="altitude" readonly="1"/>
+                        <field name="speed" readonly="1"/>
+                        <field name="accuracy" readonly="1"/>
+                        <field name="distance" readonly="1"/>
+                        <field name="total_distance" readonly="1"/>
+
+                    </group>
+                </sheet>
+                <footer>
+                    <button string="Close" class="btn-primary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

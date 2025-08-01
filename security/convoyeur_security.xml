@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Create convoyeur group -->
+    <record id="group_convoyeur" model="res.groups">
+        <field name="name">Convoyeur</field>
+        <field name="category_id" ref="base.module_category_services_helpdesk"/>
+    </record>
+
+    <!-- Access rights -->
+    <record id="convoyeur_user" model="res.groups">
+        <field name="name">User</field>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        <field name="users" eval="[(4, ref('base.user_admin'))]"/>
+    </record>
+
+    <!-- Inherit the convoyeur group to add permissions -->
+        <record id="group_convoyeur" model="res.groups">
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        <field name="users" eval="[(4, ref('base.user_admin'))]"/>
+    </record>
+</odoo>

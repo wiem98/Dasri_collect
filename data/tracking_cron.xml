@@ -1,0 +1,11 @@
+<odoo>
+  <record id="ir_cron_update_tracking_info" model="ir.cron">
+    <field name="name">Update Vehicle Tracking</field>
+    <field name="model_id" ref="fleet.model_fleet_vehicle"/>
+    <field name="state">code</field>
+    <field name="code">model.update_tracking_info()</field>
+    <field name="interval_number">5</field>
+    <field name="interval_type">minutes</field>
+    <field name="active">True</field>
+  </record>
+</odoo>

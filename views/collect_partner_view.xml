@@ -1,0 +1,48 @@
+<odoo>
+    <record id="view_partner_form_inherit_driver_client" model="ir.ui.view">
+        <field name="name">res.partner.form.inherit.driver.client</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="priority" eval="100"/>
+        <field name="arch" type="xml">
+
+            <!-- Hide function field if in driver OR client context -->
+            <xpath expr="//field[@name='function']" position="attributes">
+                <attribute name="invisible">context.get('is_client_context')</attribute>
+            </xpath>
+
+
+            <!-- Hide vat if in driver context -->
+            <xpath expr="//field[@name='vat']" position="attributes">
+                <attribute name="invisible">context.get('is_client_context')</attribute>
+            </xpath>
+
+
+            <!-- Hide Sales & Purchase tab if in driver OR client context -->
+            <xpath expr="//page[@name='sales_purchases']" position="attributes">
+                <attribute name="invisible">context.get('is_client_context')</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='vat']" position="before">
+                <field name="latitude" string='Latitude'/>
+                <field name="longitude" string='Longitude'/>
+                <button name="action_get_geolocation"
+                        string="Get Location"
+                        type="object"
+                        class="btn-primary"/>
+                    <field name="type_client"/>
+                    <field name="contrat_ids"/>
+
+            </xpath>
+           <xpath expr="//div[@class='oe_button_box']" position="inside">
+    <button name="action_view_contrats"
+            type="object"
+            class="oe_stat_button"
+            icon="fa-folder-open"
+            string="Consulter le contrat"/>
+</xpath>
+
+        </field>
+    </record>
+    
+</odoo>

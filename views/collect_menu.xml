@@ -1,0 +1,106 @@
+<odoo>
+    <!-- Top-level menu -->
+    <menuitem id="collecte_menu_root"
+              name="Collecte"
+              sequence="10"/>
+
+    <menuitem id="collecte_menu_fleet"
+              name="Fleet"
+              parent="collecte_menu_root"
+              sequence="10"/>
+
+    <menuitem id="collecte_menu_vehicle"
+              name="Vehicles"
+              parent="collecte_menu_fleet"
+              action="action_collect_vehicle"
+              sequence="10"/>
+
+    <menuitem id="collecte_menu_driver_locations"
+              name="Driver Locations"
+              parent="collecte_menu_fleet"
+              action="action_traccar_track_history_popup"
+              sequence="40"/>
+
+    <!-- MENU Clients with submenus -->
+    <menuitem id="collecte_menu_clients"
+              name="Clients"
+              parent="collecte_menu_root"
+              sequence="20"/>
+
+    <!-- Submenu 1: Clients -->
+    <menuitem id="collecte_menu_clients"
+          name="Clients"
+          parent="collecte_menu_root"
+          sequence="20"/>
+
+   <menuitem id="collecte_menu_clients_list"
+          name="Liste des Clients"
+          parent="collecte_menu_clients"
+          action="action_collect_clients"
+          sequence="1"/>
+
+<!-- Sous-menu 2 : Contrats Clients -->
+<menuitem id="collecte_menu_contrats_clients"
+          name="Contrats Clients"
+          parent="collecte_menu_clients"
+          action="action_collecte_contrat"
+          sequence="2"/>
+          
+    <!-- Utilisateurs -->
+    <menuitem id="collecte_menu_utilisateurs"
+              name="Utilisateurs"
+              parent="collecte_menu_root"
+              action="action_collect_convoyeur"
+              sequence="30"/>
+
+    <!-- Suivi Déchets -->
+    <menuitem id="collecte_menu_suivi"
+              name="Suivi Déchets"
+              parent="collecte_menu_root"
+              sequence="40"/>
+
+    <menuitem id="collect_numero_registre"
+              name="Numéro de Registre"
+              parent="collecte_menu_suivi"
+              action="action_collect_numero_registre"
+              sequence="10"/>
+
+    <menuitem id="collecte_menu_bordereau"
+              name="Bordereau de suivi"
+              parent="collecte_menu_suivi"
+              action="action_collect_bordereau"
+              sequence="20"/>
+
+    <!-- Carte des clients -->
+    <record id="action_client_map" model="ir.actions.client">
+        <field name="name">Carte des Clients</field>
+        <field name="tag">client_map_view</field>
+    </record>
+
+    <menuitem id="menu_client_map_root"
+              name="Carte des clients"
+              parent="collecte_menu_root"
+              action="action_client_map"
+              sequence="50"/>
+
+    <!-- Suivi Temps Réel -->
+    <menuitem id="menu_realtime_tracking"
+              name="Suivi Temps Réel"
+              parent="collecte_menu_fleet"
+              action="action_realtime_tracking_wizard"
+              sequence="50"/>
+
+<!--  Planification Mensuelle -->
+
+    <menuitem id="collecte_menu_planification"
+          name="Planification"
+          parent="collecte_menu_root"
+          sequence="60"/>
+
+    <menuitem id="collecte_menu_planning_mensuel"
+          name="Planification Mensuelle"
+          parent="collecte_menu_planification"
+          action="action_collecte_planning_mensuel"
+          sequence="10"/>
+
+</odoo>
