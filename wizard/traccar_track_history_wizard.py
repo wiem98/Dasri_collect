@@ -33,7 +33,8 @@ class TraccarTrackHistoryWizard(models.TransientModel):
             self.date_to = now
 
     def action_show_track(self):
-        logger = logging.getLogger(name_)
+        _logger = logging.getLogger(__name__)
+        _logger.info("Sending to JS: device_id=%s, from=%s, to=%s", self.vehicle_id.traccar_device_id, self.date_from, self.date_to)
 
         return {
             'type': 'ir.actions.client',
@@ -44,3 +45,5 @@ class TraccarTrackHistoryWizard(models.TransientModel):
                 'date_to': self.date_to.isoformat() if self.date_to else '',
             }
         }
+
+

@@ -22,6 +22,10 @@
         'wizard/realtime_tracking_wizard_view.xml',
         'views/collect_contrat.xml',
         'views/collect_planning_mensuel.xml',
+        'views/collect_planification_calendrier.xml',
+        'views/collect_planning_jour.xml',
+
+
     ],
     'assets': {
         'web.assets_backend': [

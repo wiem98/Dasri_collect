@@ -10,7 +10,7 @@
         <sheet>
           <group>
             <field name="name"/>
-            <field name="mois"/>
+            <field name="mois" />
             <field name="annee"/>
             <field name="capacite_journaliere"/>
             <field name="state" readonly="1"/>
@@ -35,6 +35,8 @@
             </page>
           </notebook>
         </sheet>
+              <chatter/>
+
       </form>
     </field>
   </record>
@@ -67,18 +69,7 @@
     </field>
   </record>
 
-  <!-- ========== Planning Lines Calendar View ========== -->
-  <record id="view_collecte_planning_ligne_calendar" model="ir.ui.view">
-    <field name="name">collecte.planning_ligne.calendar</field>
-    <field name="model">collecte.planning_ligne</field>
-    <field name="arch" type="xml">
-      <calendar string="Planning Collecte" date_start="date" color="partner_id">
-        <field name="partner_id"/>
-        <field name="quantite"/>
-      </calendar>
-    </field>
-  </record>
-
+  
  
 
 

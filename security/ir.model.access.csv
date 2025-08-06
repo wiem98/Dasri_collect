@@ -13,3 +13,5 @@ access_res_partner_user,access.res.partner.user,base.model_res_partner,base.grou
 access_collecte_contrat_user,access.collecte.contrat.user,model_collecte_contrat,base.group_user,1,1,1,1
 access_collecte_planning_mensuel_user,access.collecte.planning.mensuel.user,model_collecte_planning_mensuel,base.group_user,1,1,1,1
 access_collecte_planning_ligne_user,access.collecte.planning.ligne.user,model_collecte_planning_ligne,base.group_user,1,1,1,1
+access_collecte_planning_journalier_user,access.collecte.planning.journalier.user,model_collecte_planning_journalier,base.group_user,1,1,1,1
+access_collecte_planning_journalier_ligne_user,access.collecte.planning.journalier.ligne.user,model_collecte_planning_journalier_ligne,base.group_user,1,1,1,1

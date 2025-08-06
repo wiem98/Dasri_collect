@@ -60,7 +60,7 @@
 </record>
  <!-- ========== Action for Monthly Planning ========== -->
   <record id="action_collecte_planning_mensuel" model="ir.actions.act_window">
-    <field name="name">Plannings Mensuels</field>
+    <field name="name">Plannification Mensuelle</field>
     <field name="res_model">collecte.planning_mensuel</field>
     <field name="view_mode">list,form</field>
     <field name="help" type="html">
@@ -68,10 +68,22 @@
     </field>
   </record>
 
-  <!-- ========== Action for Planning Lines (optional direct access) ========== -->
-  <record id="action_collecte_planning_ligne" model="ir.actions.act_window">
-    <field name="name">Toutes les Collectes</field>
-    <field name="res_model">collecte.planning_ligne</field>
-    <field name="view_mode">list,calendar</field>
-  </record>
+  <!-- ========== Action for Planning Lines ========== -->
+<record id="action_collecte_planning_ligne_calendar" model="ir.actions.act_window">
+  <field name="name">Calendrier des Collectes</field>
+  <field name="res_model">collecte.planning_ligne</field>
+  <field name="view_mode">calendar,list,form</field>
+  <field name="view_id" ref="view_collecte_planning_ligne_calendar"/>
+  <field name="context">{}</field>
+</record>
+<!-- Action menu -->
+    <record id="action_collecte_planning_journalier" model="ir.actions.act_window">
+        <field name="name">Plannings Journaliers</field>
+        <field name="res_model">collecte.planning_journalier</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p>Vous pouvez consulter ici les affectations journalières par véhicule.</p>
+        </field>
+    </record>
+
 </odoo>

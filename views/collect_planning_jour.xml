@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Formulaire du modèle collecte.planning_journalier -->
+     <record id="view_collecte_planning_journalier_form" model="ir.ui.view">
+        <field name="name">collecte.planning_journalier.form</field>
+        <field name="model">collecte.planning_journalier</field>
+        <field name="arch" type="xml">
+            <form string="Planning Journalier">
+                <header>
+                    <button name="action_planifier_auto" type="object" string="Planifier Automatiquement" class="btn-primary"/>
+                </header>
+
+                <group>
+                    <field name="date"/>
+                    <field name="total_quantite" readonly="1"/>
+                </group>
+
+                <field name="ligne_ids">
+                    <list editable="bottom">
+                         <field name="vehicle_id" />
+
+                        <field name="partner_id"/>
+                        <field name="latitude"/>
+                        <field name="longitude"/>
+                    </list>
+                </field>
+            </form>
+        </field>
+    </record>
+    <!-- Vue liste -->
+    <record id="view_collecte_planning_journalier_tree" model="ir.ui.view">
+        <field name="name">collecte.planning_journalier.tree</field>
+        <field name="model">collecte.planning_journalier</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="date"/>
+                <field name="vehicle_id"/>
+                <field name="total_quantite"/>
+            </list>
+        </field>
+    </record>
+
+
+</odoo>

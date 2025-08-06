@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+  <!-- ========== Planning Lines Calendar View ========== -->
+  <record id="view_collecte_planning_ligne_calendar" model="ir.ui.view">
+    <field name="name">collecte.planning_ligne.calendar</field>
+    <field name="model">collecte.planning_ligne</field>
+    <field name="arch" type="xml">
+      <calendar string="Planning Collecte" date_start="date" color="partner_id">
+          <field name="name"/>
+
+        <field name="partner_id"/>
+        <field name="quantite"/>
+      </calendar>
+    </field>
+  </record>
+  <record id="view_collecte_planning_ligne_tree" model="ir.ui.view">
+  <field name="name">collecte.planning_ligne.tree</field>
+  <field name="model">collecte.planning_ligne</field>
+  <field name="arch" type="xml">
+    <list>
+      <field name="date"/>
+      <field name="partner_id"/>
+      <field name="contrat_id"/>
+      <field name="quantite"/>
+    </list>
+  </field>
+</record>
+<record id="view_collecte_planning_ligne_form" model="ir.ui.view">
+  <field name="name">collecte.planning_ligne.form</field>
+  <field name="model">collecte.planning_ligne</field>
+  <field name="arch" type="xml">
+    <form string="Ligne de Collecte">
+      <group>
+        <field name="date"/>
+        <field name="partner_id"/>
+        <field name="contrat_id"/>
+        <field name="quantite"/>
+      </group>
+    </form>
+  </field>
+</record>
+
+</odoo>

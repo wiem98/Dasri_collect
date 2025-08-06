@@ -109,6 +109,20 @@ class CollecteContrat(models.Model):
         string='Passages par semaine',
         tracking=True
     )
+    jour_fixe = fields.Selection(
+        selection=[
+            ('lundi', 'Lundi'),
+            ('mardi', 'Mardi'),
+            ('mercredi', 'Mercredi'),
+            ('jeudi', 'Jeudi'),
+            ('vendredi', 'Vendredi'),
+            ('samedi', 'Samedi'),
+            ('dimanche', 'Dimanche'),
+        ],
+        string='Jour fixe de collecte',
+        tracking=True,
+        help="Jour fixe de collecte "
+    )
     @api.depends('quantite_estimee', 'frequence_collecte', 'nbre_passage_semaine')
     def _compute_quantite_previsionnelle(self):
         for record in self:

@@ -79,9 +79,9 @@
 
     <menuitem id="menu_client_map_root"
               name="Carte des clients"
-              parent="collecte_menu_root"
+              parent="collecte_menu_clients"
               action="action_client_map"
-              sequence="50"/>
+              sequence="3"/>
 
     <!-- Suivi Temps Réel -->
     <menuitem id="menu_realtime_tracking"
@@ -102,5 +102,15 @@
           parent="collecte_menu_planification"
           action="action_collecte_planning_mensuel"
           sequence="10"/>
+    <menuitem id="collecte_menu_planning_ligne_calendar"
+          name="Calendrier des Collectes"
+          parent="collecte_menu_planification"
+          action="action_collecte_planning_ligne_calendar"
+          sequence="20"/>
+    <menuitem id="collecte_menu_planning_journalier"
+          name="Planning Journalier"
+          parent="collecte_menu_planification"
+          action="action_collecte_planning_journalier"
+          sequence="30"/>
 
 </odoo>

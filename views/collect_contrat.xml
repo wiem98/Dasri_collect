@@ -24,6 +24,8 @@
             <field name="nbre_passage_semaine" />
             <field name="quantite_estimee"/>
         <field name="quantite_previsionnelle" readonly="1"/>
+                  <field name="jour_fixe"/>
+
         </group>
 
         <!-- 💰 Colonne 2 : Tarification -->
