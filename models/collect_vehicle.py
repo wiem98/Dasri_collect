@@ -6,6 +6,13 @@ from datetime import datetime, timezone, timedelta
 class CollectVehicle(models.Model):
     _inherit = 'fleet.vehicle'
 
+
+    capacity_kg = fields.Float(
+        string="Capacité (kg)",
+        digits=(10, 2),
+        help="Charge utile maximale que le véhicule peut transporter."
+    )
+
     traccar_device_id = fields.Char(string='Traccar Device ID', required=False)
     traccar_name = fields.Char(string='Device Name')
     traccar_status = fields.Char(string='Status')

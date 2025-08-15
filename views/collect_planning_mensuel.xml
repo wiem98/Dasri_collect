@@ -28,8 +28,9 @@
                 <list editable="bottom">
                   <field name="date"/>
                   <field name="partner_id"/>
-                  <field name="contrat_id"/>
                   <field name="quantite"/>
+                <field name="zone"/>          
+
                 </list>
               </field>
             </page>
@@ -63,8 +64,8 @@
       <list>
         <field name="date"/>
         <field name="partner_id"/>
-        <field name="contrat_id"/>
         <field name="quantite"/>
+
       </list>
     </field>
   </record>

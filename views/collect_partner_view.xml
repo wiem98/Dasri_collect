@@ -1,48 +1,94 @@
 <odoo>
     <record id="view_partner_form_inherit_driver_client" model="ir.ui.view">
-        <field name="name">res.partner.form.inherit.driver.client</field>
-        <field name="model">res.partner</field>
-        <field name="inherit_id" ref="base.view_partner_form"/>
-        <field name="priority" eval="100"/>
-        <field name="arch" type="xml">
+  <field name="name">res.partner.form.inherit.driver.client</field>
+  <field name="model">res.partner</field>
+  <field name="inherit_id" ref="base.view_partner_form"/>
+  <field name="priority" eval="100"/>
+  <field name="arch" type="xml">
 
-            <!-- Hide function field if in driver OR client context -->
-            <xpath expr="//field[@name='function']" position="attributes">
-                <attribute name="invisible">context.get('is_client_context')</attribute>
-            </xpath>
+    <!-- Existing tweaks -->
+    <xpath expr="//field[@name='function']" position="attributes">
+      <attribute name="invisible">context.get('is_client_context')</attribute>
+    </xpath>
 
+    <xpath expr="//field[@name='vat']" position="attributes">
+      <attribute name="invisible">context.get('is_client_context')</attribute>
+    </xpath>
 
-            <!-- Hide vat if in driver context -->
-            <xpath expr="//field[@name='vat']" position="attributes">
-                <attribute name="invisible">context.get('is_client_context')</attribute>
-            </xpath>
+    <xpath expr="//page[@name='sales_purchases']" position="attributes">
+      <attribute name="invisible">context.get('is_client_context')</attribute>
+    </xpath>
 
+    <xpath expr="//field[@name='vat']" position="before">
+      <field name="latitude" string="Latitude"/>
+      <field name="longitude" string="Longitude"/>
+      <button name="action_get_geolocation" string="Get Location" type="object" class="btn-primary"/>
+      <field name="type_client"/>
+      <field name="distance_from_origin"/>
+      <field name="zone"/>
+    </xpath>
+    <xpath expr="//sheet/notebook" position="inside">
+  <page string="Contrat de collecte" name="collecte_contrat_inline">
+    <!-- Bloc 1 : Infos générales -->
+    <group string="Informations générales" col="2">
+      <field name="type_contrat" required="1"/>
+      <field name="duree_marche"/>
+      <field name="unite_duree" required="1"/>
+      <field name="montant_marche"/>
+    </group>
 
-            <!-- Hide Sales & Purchase tab if in driver OR client context -->
-            <xpath expr="//page[@name='sales_purchases']" position="attributes">
-                <attribute name="invisible">context.get('is_client_context')</attribute>
-            </xpath>
+    <!-- Bloc 2 : 2 colonnes -->
+    <group col="2">
+      <!-- Colonne gauche : Volume & Fréquence -->
+      <group string="Volume &amp; Fréquence de collecte">
+        <field name="frequence_collecte" required="1"/>
+        <field name="nbre_passage_semaine"/>
+        <field name="quantite_estimee"/>
+        <field name="quantite_previsionnelle" readonly="1"/>
+        <field name="jour_fixe"/>
+      </group>
 
-            <xpath expr="//field[@name='vat']" position="before">
-                <field name="latitude" string='Latitude'/>
-                <field name="longitude" string='Longitude'/>
-                <button name="action_get_geolocation"
-                        string="Get Location"
-                        type="object"
-                        class="btn-primary"/>
-                    <field name="type_client"/>
-                    <field name="contrat_ids"/>
-
-            </xpath>
-           <xpath expr="//div[@class='oe_button_box']" position="inside">
-    <button name="action_view_contrats"
-            type="object"
-            class="oe_stat_button"
-            icon="fa-folder-open"
-            string="Consulter le contrat"/>
+      <!-- Colonne droite : Tarification -->
+      <group string="Tarification">
+        <field name="prix_par_passage"/>
+        <field name="prix_kg"/>
+        <field name="seuil_annuel_kg"/>
+        <field name="appliquer_tarif_surplus"/>
+      </group>
+    </group>
+  </page>
 </xpath>
 
-        </field>
-    </record>
-    
+  
+
+
+  </field>
+</record>
+
+
+     <record id="view_partner_list_inherit_distance_zone" model="ir.ui.view">
+    <field name="name">res.partner.list.inherit.distance.zone</field>
+    <field name="model">res.partner</field>
+    <!-- This is the one shown in your screenshot -->
+    <field name="inherit_id" ref="base.view_partner_tree"/>
+    <field name="priority" eval="100"/>
+    <field name="arch" type="xml">
+
+      <!-- Insert after country (choose any anchor you like from the base list) -->
+      <xpath expr="//list/field[@name='country_id']" position="after">
+        <!-- Show computed distance (stored) -->
+        <field name="distance_from_origin"
+               string="Distance (km)"
+               optional="show"/>
+        <!-- Your custom zone field -->
+        <field name="zone" optional="show"/>
+      </xpath>
+
+      <!-- (Optional) Ensure list allows inline edits if you want -->
+      <xpath expr="//list" position="attributes">
+        <attribute name="multi_edit">1</attribute>
+      </xpath>
+
+    </field>
+  </record>
 </odoo>

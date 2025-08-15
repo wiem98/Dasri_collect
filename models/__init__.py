@@ -5,6 +5,5 @@ from . import conteneur_ligne
 from . import collecteur_ligne
 from . import collect_convoyeur
 from . import convoyeur_token
-from . import collect_contrat
 from . import collecte_planning_mensuel
 from . import collecte_planning_jour

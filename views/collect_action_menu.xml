@@ -48,16 +48,7 @@
         </field>
     </record>
     <!-- Action Contrats de Collecte -->
-<record id="action_collecte_contrat" model="ir.actions.act_window">
-    <field name="name">Contrats de Collecte</field>
-    <field name="res_model">collecte.contrat</field>
-    <field name="view_mode">list,form</field>
-    <field name="help" type="html">
-        <p class="o_view_nocontent_smiling_face">
-            Créez un nouveau contrat de collecte pour un client.
-        </p>
-    </field>
-</record>
+
  <!-- ========== Action for Monthly Planning ========== -->
   <record id="action_collecte_planning_mensuel" model="ir.actions.act_window">
     <field name="name">Plannification Mensuelle</field>
@@ -85,5 +76,17 @@
             <p>Vous pouvez consulter ici les affectations journalières par véhicule.</p>
         </field>
     </record>
+    <record id="action_client_show_route_map" model="ir.actions.client">
+        <field name="name">Show Route Map</field>
+        <field name="tag">show_route_map</field>
+        <field name="target">fullscreen</field>
+    </record>
 
+    <record id="route_map_client_action" model="ir.ui.view">
+        <field name="name">route.map.client.action</field>
+        <field name="type">qweb</field>
+        <field name="arch" type="xml">
+            <t t-name="RouteMapTemplate"/>
+        </field>
+    </record>
 </odoo>

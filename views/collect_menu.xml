@@ -39,12 +39,7 @@
           action="action_collect_clients"
           sequence="1"/>
 
-<!-- Sous-menu 2 : Contrats Clients -->
-<menuitem id="collecte_menu_contrats_clients"
-          name="Contrats Clients"
-          parent="collecte_menu_clients"
-          action="action_collecte_contrat"
-          sequence="2"/>
+
           
     <!-- Utilisateurs -->
     <menuitem id="collecte_menu_utilisateurs"
@@ -81,7 +76,7 @@
               name="Carte des clients"
               parent="collecte_menu_clients"
               action="action_client_map"
-              sequence="3"/>
+              sequence="2"/>
 
     <!-- Suivi Temps Réel -->
     <menuitem id="menu_realtime_tracking"

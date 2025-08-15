@@ -20,7 +20,6 @@
         'views/collect_action_menu.xml',
         'views/collect_menu.xml',
         'wizard/realtime_tracking_wizard_view.xml',
-        'views/collect_contrat.xml',
         'views/collect_planning_mensuel.xml',
         'views/collect_planification_calendrier.xml',
         'views/collect_planning_jour.xml',
@@ -38,7 +37,13 @@
              'collecte_module/static/src/js/client_map_view.js',
             'collecte_module/static/src/xml/client_map_template.xml',
             'collecte_module/static/src/js/traccar_realtime_tracking_map.js',
-        'collecte_module/static/src/xml/realtime_tracking_map_template.xml',
+          'collecte_module/static/src/xml/realtime_tracking_map_template.xml',
+         'collecte_module/static/src/xml/planing_jour_templates.xml',
+         'collecte_module/static/src/js/planning_jour.js',
+                "https://unpkg.com/@mapbox/polyline@1.1.1/src/polyline.js",
+
+
+
         ],
     },
     'installable': True,

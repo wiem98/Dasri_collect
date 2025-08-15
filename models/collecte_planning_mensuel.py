@@ -4,12 +4,17 @@ import calendar
 from sklearn.cluster import KMeans
 import random
 from datetime import date as dt
+import logging
+from collections import defaultdict
+from odoo.exceptions import UserError
+from math import radians, sin, cos, asin, sqrt
+_logger = logging.getLogger(__name__)
+
 
 class CollectePlanningMensuel(models.Model):
     _name = 'collecte.planning_mensuel'
     _description = 'Planning Mensuel de Collecte'
     _inherit = ["mail.thread", "mail.activity.mixin"]
-
 
     name = fields.Char(string="Libellé", required=True, default="Planning", tracking=True)
     mois = fields.Selection([
@@ -17,154 +22,159 @@ class CollectePlanningMensuel(models.Model):
         ('5', 'Mai'), ('6', 'Juin'), ('7', 'Juillet'), ('8', 'Août'),
         ('9', 'Septembre'), ('10', 'Octobre'), ('11', 'Novembre'), ('12', 'Décembre')
     ], string="Mois", required=True, tracking=True)
-
     annee = fields.Integer(string="Année", default=lambda self: datetime.today().year, tracking=True)
+
     line_ids = fields.One2many('collecte.planning_ligne', 'planning_id', string="Lignes de planning")
-    state = fields.Selection([
-        ('draft', 'Brouillon'),
-        ('done', 'Validé')
-    ], default='draft', tracking=True)
+    state = fields.Selection([('draft', 'Brouillon'), ('done', 'Validé')], default='draft', tracking=True)
 
     capacite_journaliere = fields.Float(string="Capacité maximale par jour", default=10000, tracking=True)
+
+    def haversine(lon1, lat1, lon2, lat2):
+        """Distance in km between two lat/lon points."""
+        lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
+        dlon = lon2 - lon1
+        dlat = lat2 - lat1
+        a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
+        c = 2 * asin(sqrt(a))
+        return 6371 * c  # Earth radius in km
+
     def action_generer_planning(self):
         self.ensure_one()
 
         mois_int = int(self.mois)
         _, last_day = calendar.monthrange(self.annee, mois_int)
-
-        # Toutes les dates du mois sauf dimanche
         all_dates = [
             datetime(self.annee, mois_int, day).date()
             for day in range(1, last_day + 1)
-            if datetime(self.annee, mois_int, day).weekday() != 6  # 6 = dimanche
+            if datetime(self.annee, mois_int, day).weekday() != 6  # exclure dimanche
         ]
-        used_capacity = {date: 0 for date in all_dates}
+
+        used_capacity = {d: 0.0 for d in all_dates}
+        day_zone = {d: None for d in all_dates}
         planning_lines = []
 
-        contrats = self.env['collecte.contrat'].search([])
+        partners = self.env['res.partner'].search([
+            ('active', '=', True),
+            '|', ('quantite_previsionnelle', '>', 0.0),
+                ('quantite_estimee', '>', 0.0),
+        ])
 
-        # Mapping de jour_fixe vers weekday (0=lundi, ..., 6=dimanche)
-        jours_mapping = {
-            'lundi': 0,
-            'mardi': 1,
-            'mercredi': 2,
-            'jeudi': 3,
-            'vendredi': 4,
-            'samedi': 5,
-            'dimanche': 6
-        }
+        # --- Step 1: Prepare data for clustering ---
+        coords = []
+        partner_list = []
+        for p in partners:
+            if p.latitude and p.longitude:
+                coords.append([p.latitude, p.longitude])
+                partner_list.append(p)
 
-        for contrat in contrats:
-            poids = contrat.quantite_previsionnelle or 0.0
-            if not poids:
-                continue
+        clusters = {}
+        if coords and len(coords) >= 3:  # minimum to cluster
+            try:
+                k = min(5, len(coords))  # choose up to 5 clusters, adjust as needed
+                km = KMeans(n_clusters=k, random_state=42)
+                labels = km.fit_predict(coords)
+                for label, partner in zip(labels, partner_list):
+                    clusters.setdefault(f"Cluster_{label}", []).append(partner)
+            except Exception as e:
+                _logger.error(f"[PLANNING] Clustering failed: {e}")
+        else:
+            clusters["Cluster_0"] = partner_list
 
-            freq_par_semaine = int(contrat.nbre_passage_semaine or 1)
-            freq_par_mois = freq_par_semaine * 4
+        # --- Step 2: Add partners without coords to a separate group ---
+        for p in partners:
+            if not p.latitude or not p.longitude:
+                clusters.setdefault("NoCoords", []).append(p)
 
-            # ✅ Appliquer le filtre sur jour fixe s'il est défini
-            if contrat.jour_fixe:
-                jour_index = jours_mapping.get(contrat.jour_fixe.lower())
-                dates_possibles = [
-                    d for d in all_dates if d.weekday() == jour_index
-                ]
-            else:
-                dates_possibles = all_dates
+        jours_mapping = {'lundi':0,'mardi':1,'mercredi':2,'jeudi':3,'vendredi':4,'samedi':5}
 
-            # Trier par capacité restante
-            dates_possibles = sorted(dates_possibles, key=lambda d: used_capacity[d])
-            count = 0
+        # --- Step 3: Loop over each cluster ---
+        created = 0
+        for zone, zone_partners in clusters.items():
+            # Sort fixed days first
+            def fix_rank(p): return 0 if p.jour_fixe else 1
+            zone_partners.sort(key=lambda p: (fix_rank(p), p.id or 0))
 
-            for d in dates_possibles:
-                if count >= freq_par_mois:
-                    break
-                if used_capacity[d] + poids <= self.capacite_journaliere:
-                    planning_lines.append((0, 0, {
-                        'date': d,
-                        'partner_id': contrat.partner_id.id,
-                        'contrat_id': contrat.id,
-                        'quantite': poids,
-                    }))
-                    used_capacity[d] += poids
-                    count += 1
+            for partner in zone_partners:
+                poids = float(partner.quantite_previsionnelle or partner.quantite_estimee or 0.0)
+                if not poids:
+                    continue
 
-        # Nettoyage et sauvegarde
+                # Frequency per month
+                freq_par_mois = 0
+                if partner.nbre_passage_semaine:
+                    try: freq_par_mois = int(partner.nbre_passage_semaine) * 4
+                    except: pass
+                elif partner.frequence_collecte:
+                    try: freq_par_mois = max(1, 30 // int(partner.frequence_collecte))
+                    except: pass
+                if not freq_par_mois:
+                    freq_par_mois = 1
+
+                # Candidate dates
+                candidate_dates = list(all_dates)
+                if partner.jour_fixe:
+                    jour_index = jours_mapping.get((partner.jour_fixe or '').lower())
+                    if jour_index is not None:
+                        candidate_dates = [d for d in all_dates if d.weekday() == jour_index]
+                        if not candidate_dates:
+                            _logger.warning("[PLANNING] %s jour_fixe=%s non planifiable. Fallback tous jours.",
+                                            partner.display_name, partner.jour_fixe)
+                            candidate_dates = list(all_dates)
+
+                # Prefer same cluster on same day
+                preferred = [d for d in candidate_dates if day_zone[d] in (None, zone)]
+                preferred.sort(key=lambda d: used_capacity[d])
+
+                count = 0
+                for d in preferred:
+                    if count >= freq_par_mois:
+                        break
+                    if used_capacity[d] + poids <= self.capacite_journaliere:
+                        planning_lines.append((0, 0, {
+                            'date': d,
+                            'partner_id': partner.id,
+                            'quantite': poids,
+                        }))
+                        used_capacity[d] += poids
+                        if day_zone[d] is None:
+                            day_zone[d] = zone
+                        count += 1
+                        created += 1
+
+                # Fallback dates
+                if count < freq_par_mois:
+                    fallback = [d for d in candidate_dates if d not in preferred]
+                    fallback.sort(key=lambda d: used_capacity[d])
+                    for d in fallback:
+                        if count >= freq_par_mois:
+                            break
+                        if used_capacity[d] + poids <= self.capacite_journaliere:
+                            planning_lines.append((0, 0, {
+                                'date': d,
+                                'partner_id': partner.id,
+                                'quantite': poids,
+                            }))
+                            used_capacity[d] += poids
+                            count += 1
+                            created += 1
+
+        # --- Step 4: Save results ---
+        if not planning_lines:
+            self.message_post(body="⚠️ Aucun planning généré.")
+            self.write({'state': 'draft'})
+            return
+
         self.line_ids.unlink()
-        self.write({
-            'line_ids': planning_lines,
-            'state': 'done',
-        })
-
+        self.write({'line_ids': planning_lines, 'state': 'done'})
+        _logger.info("[PLANNING] Lignes créées: %s", created)
     @api.model
     def _get_thread_with_access(self, thread_id, **kwargs):
         record = self.browse(thread_id)
         record.check_access_rights('read')
         record.check_access_rule('read')
         return record
+
     
-        
-    def action_generer_plan_journalier(self):
-        for planning in self:
-            today = dt.today()
-            lignes_du_jour = planning.line_ids.filtered(lambda l: l.date == today)
-
-            if not lignes_du_jour:
-                continue
-
-            # Extraire les points avec coordonnées
-            points = []
-            for ligne in lignes_du_jour:
-                partner = ligne.partner_id
-                if partner.latitude and partner.longitude:
-                    quantite = ligne.quantite * (1 + random.uniform(0.1, 0.2))  # ajout aléatoire
-                    points.append({
-                        'partner_id': partner.id,
-                        'adresse': partner.contact_address,
-                        'quantite': round(quantite, 2),
-                        'latitude': partner.latitude,
-                        'longitude': partner.longitude,
-                    })
-
-            if not points:
-                continue
-
-            coords = [[p['latitude'], p['longitude']] for p in points]
-
-            # Récupérer les véhicules
-            vehicles = self.env['fleet.vehicle'].search([], limit=len(points))
-            NB_CLUSTERS = min(len(points), len(vehicles))
-
-            kmeans = KMeans(n_clusters=NB_CLUSTERS).fit(coords)
-            clusters = {}
-            for idx, label in enumerate(kmeans.labels_):
-                clusters.setdefault(label, []).append(points[idx])
-
-            for idx, (label, cluster_points) in enumerate(clusters.items()):
-                if idx >= len(vehicles):
-                    continue  # ou utiliser vehicles[0] si tu veux réutiliser le même véhicule
-                vehicle = vehicles[idx]
-
-                lignes = []
-                ordre = 1
-                for pt in sorted(cluster_points, key=lambda p: p['quantite'], reverse=True):
-                    lignes.append((0, 0, {
-                        'partner_id': pt['partner_id'],
-                        'adresse': pt['adresse'],
-                        'quantite_collectee': pt['quantite'],
-                        'latitude': pt['latitude'],
-                        'longitude': pt['longitude'],
-                        'ordre': ordre,
-                        'vehicle_id': vehicle.id,  
-
-                    }))
-                    ordre += 1
-
-                self.env['collecte.planning_journalier'].create({
-                    'date': today,
-                    'vehicle_id': vehicle.id,
-                    'ligne_ids': lignes,
-                })
-
 
 class CollectePlanningLigne(models.Model):
     _name = 'collecte.planning_ligne'
@@ -174,11 +184,16 @@ class CollectePlanningLigne(models.Model):
 
     planning_id = fields.Many2one('collecte.planning_mensuel', required=True, ondelete='cascade')
     date = fields.Date(string="Date", required=True)
-    partner_id = fields.Many2one('res.partner', string="Client")
-    contrat_id = fields.Many2one('collecte.contrat', string="Contrat")
+    partner_id = fields.Many2one('res.partner', string="Client", required=True)
     quantite = fields.Float(string="Quantité prévue (kg)")
     name = fields.Char(string='Libellé', compute='_compute_name', store=True)
-
+    zone = fields.Selection(
+    related='partner_id.zone',
+    string="Zone",
+    store=True,
+    readonly=True,
+    index=True,
+)
     @api.depends('partner_id', 'quantite')
     def _compute_name(self):
         for rec in self:
@@ -186,4 +201,3 @@ class CollectePlanningLigne(models.Model):
                 rec.name = f"{rec.partner_id.name} - {rec.quantite:.2f} kg"
             else:
                 rec.name = "Collecte"
-    

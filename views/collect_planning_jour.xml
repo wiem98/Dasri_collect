@@ -7,7 +7,15 @@
         <field name="arch" type="xml">
             <form string="Planning Journalier">
                 <header>
-                    <button name="action_planifier_auto" type="object" string="Planifier Automatiquement" class="btn-primary"/>
+                    <button name="action_generate_from_monthly"
+                            type="object"
+                            string="Générer depuis le planning mensuel"
+                            class="btn-primary"/>      
+                        <button name="action_show_optimized_route"
+                    type="object"
+                    string="Voir le trajet optimisé"
+                    class="btn-secondary"
+                    icon="fa-map"/>
                 </header>
 
                 <group>
@@ -20,8 +28,11 @@
                          <field name="vehicle_id" />
 
                         <field name="partner_id"/>
-                        <field name="latitude"/>
-                        <field name="longitude"/>
+                        <field name="zone"/>          
+                        <field name="drive_distance_km"/>
+                        <field name="drive_time_min"/>
+                        <field name="service_time_min"/>
+                        <field name="cumulative_time_min"/>
                     </list>
                 </field>
             </form>
@@ -39,6 +50,6 @@
             </list>
         </field>
     </record>
-
+    
 
 </odoo>

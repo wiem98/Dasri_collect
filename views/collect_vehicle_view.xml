@@ -14,6 +14,9 @@
                         icon="fa-car"
                         invisible="traccar_unique_id == False"/>
             </xpath>
+                <xpath expr="//field[@name='location']" position="after">
+                <field name="capacity_kg"/>
+            </xpath>
             <!-- Insert before existing notebook -->
             <xpath expr="//sheet/notebook" position="before">
                 <group string="Traccar Details">

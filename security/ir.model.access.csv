@@ -10,7 +10,6 @@ access_collect_convoyeur_admin,collect.convoyeur,model_collect_convoyeur,base.gr
 access_confirmation_wizard,access.confirmation.wizard,model_confirmation_wizard,,1,1,1,1
 access_realtime_tracking_wizard,wizard.traccar.realtime.tracking,model_wizard_traccar_realtime_tracking,base.group_user,1,1,1,1
 access_res_partner_user,access.res.partner.user,base.model_res_partner,base.group_user,1,1,1,1
-access_collecte_contrat_user,access.collecte.contrat.user,model_collecte_contrat,base.group_user,1,1,1,1
 access_collecte_planning_mensuel_user,access.collecte.planning.mensuel.user,model_collecte_planning_mensuel,base.group_user,1,1,1,1
 access_collecte_planning_ligne_user,access.collecte.planning.ligne.user,model_collecte_planning_ligne,base.group_user,1,1,1,1
 access_collecte_planning_journalier_user,access.collecte.planning.journalier.user,model_collecte_planning_journalier,base.group_user,1,1,1,1

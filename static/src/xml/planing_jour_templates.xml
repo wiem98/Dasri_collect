@@ -1,0 +1,6 @@
+<odoo>
+    <template id="RouteMapTemplate" t-name="collecte_module.RouteMapTemplate">
+        <div class="o_route_map_container"
+             style="width: 100%; height: 100%; min-height: 600px;"></div>
+    </template>
+</odoo>
