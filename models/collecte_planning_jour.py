@@ -14,7 +14,7 @@ class DailyVehiclePlanning(models.Model):
     vehicle_id = fields.Many2one('fleet.vehicle', string="Véhicule", index=True)
     ligne_ids = fields.One2many('collecte.planning_journalier_ligne', 'planning_id', string="Destinations")
     total_quantite = fields.Float(string="Quantité totale (kg)", compute="_compute_total")
-    monthly_id = fields.Many2one('collecte.planning_mensuel', string="Planning mensuel", index=True)
+    monthly_id = fields.Many2one('collecte.planning_mensuelle', string="Planning mensuel", index=True)
 
     sql_constraints = [
         ('uniq_vehicle_date', 'unique(date, vehicle_id)', "Un planning existe déjà pour ce véhicule et cette date."),
@@ -69,9 +69,9 @@ class DailyVehiclePlanning(models.Model):
 
         # 1) Planning mensuel
         dom = [('annee', '=', selected_date.year), ('mois', '=', str(selected_date.month))]
-        monthly = self.env['collecte.planning_mensuel'].search(dom + [('state', '=', 'done')], limit=1)
+        monthly = self.env['collecte.planning_mensuelle'].search(dom + [('state', '=', 'done')], limit=1)
         if not monthly:
-            monthly = self.env['collecte.planning_mensuel'].search(dom, limit=1)
+            monthly = self.env['collecte.planning_mensuelle'].search(dom, limit=1)
         if not monthly:
             raise UserError(f"Aucun planning mensuel trouvé pour {selected_date.strftime('%m/%Y')}.")
 
@@ -115,25 +115,38 @@ class DailyVehiclePlanning(models.Model):
         n_clusters = max(1, min(len(points), len(vehicles)))
 
         # 6) Clustering
-        zones_sorted = sorted({pt['zone'] for pt in points})
-        zone_to_idx = {z: i for i, z in enumerate(zones_sorted)}
-        for pt in points:
-            pt['zone_idx'] = zone_to_idx[pt['zone']]
+        DIST_THRESHOLD = 150.0  # km – you can adjust this value
 
-        dists = [pt['dist'] for pt in points]
-        max_dist = max(dists) if dists else 1.0
-        zone_weight = max_dist * 2.0
-
-        X = [[pt['dist'], pt['zone_idx'] * zone_weight] for pt in points]
-        kmeans = KMeans(n_clusters=n_clusters, random_state=0).fit(X)
+        # Split into near vs far
+        near_points = [pt for pt in points if pt['dist'] <= DIST_THRESHOLD]
+        far_points = [pt for pt in points if pt['dist'] > DIST_THRESHOLD]
 
         clusters = {}
-        for idx, label in enumerate(kmeans.labels_):
-            clusters.setdefault(label, []).append(points[idx])
 
+        # --- Normal clustering for near points ---
+        if near_points:
+            zones_sorted = sorted({pt['zone'] for pt in near_points})
+            zone_to_idx = {z: i for i, z in enumerate(zones_sorted)}
+            for pt in near_points:
+                pt['zone_idx'] = zone_to_idx[pt['zone']]
+
+            dists = [pt['dist'] for pt in near_points]
+            max_dist = max(dists) if dists else 1.0
+            zone_weight = max_dist * 2.0
+
+            X = [[pt['dist'], pt['zone_idx'] * zone_weight] for pt in near_points]
+            kmeans = KMeans(n_clusters=n_clusters, random_state=0).fit(X)
+
+            for idx, label in enumerate(kmeans.labels_):
+                clusters.setdefault(label, []).append(near_points[idx])
+
+        if far_points:
+            clusters[max(clusters.keys(), default=-1) + 1] = far_points
+            
+           
         def cluster_sort_key(kv):
             _, pts = kv
-            zmin = min(p['zone_idx'] for p in pts)
+            zmin = min(p.get('zone_idx', 999) for p in pts)  # handle far pts without zone_idx
             dmin = min(p['dist'] for p in pts)
             return (zmin, dmin)
 
@@ -220,32 +233,53 @@ class DailyVehiclePlanning(models.Model):
     def action_show_optimized_route(self):
         self.ensure_one()
 
-        origin = [9.111696, 36.370651]  # lon, lat of depot
+        origin = [9.111696, 36.370651]  # lon, lat depot
         coords = [origin]
+        clients = []
 
         for line in self.ligne_ids:
             if line.partner_id.latitude and line.partner_id.longitude:
                 coords.append([line.partner_id.longitude, line.partner_id.latitude])
+                clients.append(line.partner_id.name)
 
         if len(coords) < 2:
             return
 
         try:
             response = requests.post(
-                "https://api.openrouteservice.org/optimization",
+                "https://api.openrouteservice.org/v2/directions/driving-car/geojson",
                 json={"coordinates": coords},
                 headers={"Authorization": self.ORS_API_KEY},
                 timeout=15
             )
-            response.raise_for_status()
-            route = response.json()["routes"][0]
+            data = response.json()
+
+            route = data["features"][0]
+            geometry_coords = route["geometry"]["coordinates"]
+            
+            # Get the waypoints from the response
+            way_points = route["properties"]["way_points"]
+            
+            # Create custom steps for each client
+            client_steps = []
+            for i in range(1, len(way_points)):
+                # Calculate distance and duration for this segment if needed
+                # For simplicity, we're just setting the way_points
+                client_steps.append({
+                    "name": clients[i-1] if i-1 < len(clients) else f"Client {i}",
+                    "way_points": [way_points[i-1], way_points[i]],
+                    "distance": 0,  # You might calculate this from the steps
+                    "duration": 0   # You might calculate this from the steps
+                })
+
             return {
                 "type": "ir.actions.client",
                 "tag": "show_route_map",
                 "params": {
                     "origin": origin,
-                    "route_geometry": route["geometry"],
-                    "partner_name": self.name or _("Trajet Collecte")
+                    "route_geometry": route,
+                    "steps": client_steps,
+                    "partner_name": self.display_name or _("Trajet Collecte")
                 }
             }
         except Exception as e:
