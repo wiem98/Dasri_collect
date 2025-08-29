@@ -52,7 +52,7 @@
  <!-- ========== Action for Monthly Planning ========== -->
   <record id="action_collecte_planning_mensuel" model="ir.actions.act_window">
     <field name="name">Plannification Mensuelle</field>
-    <field name="res_model">collecte.planning_mensuelle</field>
+    <field name="res_model">collecte.planning_mensuel</field>
     <field name="view_mode">list,form</field>
     <field name="help" type="html">
       <p>Générez automatiquement un planning de collecte pour tous les contrats actifs dans un mois donné.</p>

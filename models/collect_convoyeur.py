@@ -26,7 +26,6 @@ class Convoyeur(models.Model):
         required=True,
         copy=False,
         index=True,
-        unique=True,
         default=lambda self: self._generate_num_unique()
     )
 

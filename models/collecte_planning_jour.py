@@ -14,7 +14,7 @@ class DailyVehiclePlanning(models.Model):
     vehicle_id = fields.Many2one('fleet.vehicle', string="Véhicule", index=True)
     ligne_ids = fields.One2many('collecte.planning_journalier_ligne', 'planning_id', string="Destinations")
     total_quantite = fields.Float(string="Quantité totale (kg)", compute="_compute_total")
-    monthly_id = fields.Many2one('collecte.planning_mensuelle', string="Planning mensuel", index=True)
+    monthly_id = fields.Many2one('collecte.planning_mensuel', string="Planning mensuel", index=True)
 
     sql_constraints = [
         ('uniq_vehicle_date', 'unique(date, vehicle_id)', "Un planning existe déjà pour ce véhicule et cette date."),
@@ -71,7 +71,7 @@ class DailyVehiclePlanning(models.Model):
         dom = [('annee', '=', selected_date.year), ('mois', '=', str(selected_date.month))]
         monthly = self.env['collecte.planning_mensuelle'].search(dom + [('state', '=', 'done')], limit=1)
         if not monthly:
-            monthly = self.env['collecte.planning_mensuelle'].search(dom, limit=1)
+            monthly = self.env['collecte.planning_mensuel'].search(dom, limit=1)
         if not monthly:
             raise UserError(f"Aucun planning mensuel trouvé pour {selected_date.strftime('%m/%Y')}.")
 

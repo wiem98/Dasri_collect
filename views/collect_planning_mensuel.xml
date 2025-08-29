@@ -3,8 +3,8 @@
 
   <!-- ========== Monthly Planning Form View ========== -->
   <record id="view_collecte_planning_mensuel_form" model="ir.ui.view">
-    <field name="name">collecte.planning_mensuelle.form</field>
-    <field name="model">collecte.planning_mensuelle</field>
+    <field name="name">collecte.planning_mensuel.form</field>
+    <field name="model">collecte.planning_mensuel</field>
     <field name="arch" type="xml">
       <form string="Planning Mensuel de Collecte">
         <sheet>
@@ -44,8 +44,8 @@
 
   <!-- ========== Monthly Planning Tree View ========== -->
   <record id="view_collecte_planning_mensuel_tree" model="ir.ui.view">
-    <field name="name">collecte.planning_mensuelle.tree</field>
-    <field name="model">collecte.planning_mensuelle</field>
+    <field name="name">collecte.planning_mensuel.tree</field>
+    <field name="model">collecte.planning_mensuel</field>
     <field name="arch" type="xml">
       <list>
         <field name="name"/>
