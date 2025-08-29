@@ -92,16 +92,17 @@ class CollectePlanningMensuel(models.Model):
     # Clustering via embeddings (HF ou fallback KMeans)
     # -----------------------
     def _cluster_jobs(self, jobs, n_clusters=3):
-        coords = [f"{j['location'][0]},{j['location'][1]}" for j in jobs]
+        coords = [[j['location'][0], j['location'][1]] for j in jobs]
         try:
             if HF_MODEL:
-                embeddings = HF_MODEL.encode(coords)
+                # HF model still expects text, so convert each coord back to string
+                embeddings = HF_MODEL.encode([str(c) for c in coords])
             else:
                 raise RuntimeError("HF indisponible")
         except Exception as e:
             _logger.warning("[CLUSTER] HuggingFace non dispo (%s), fallback KMeans", e)
-            embeddings = np.array([j["location"] for j in jobs])
-
+            # fallback: just use numeric coords directly
+            embeddings = np.array(coords)
         # KMeans clustering
         kmeans = KMeans(n_clusters=min(n_clusters, len(jobs)), random_state=42, n_init="auto")
         labels = kmeans.fit_predict(embeddings)
@@ -155,15 +156,13 @@ class CollectePlanningMensuel(models.Model):
         jobs_restants = jobs[:]
 
         for jour in jours_du_mois:
-            # 1. Filtrer par jour fixe / fréquence
             jobs_du_jour = []
-            for j in list(jobs_restants):
+            for j in jobs:  # always check all jobs, not only "remaining"
                 partner = self.env['res.partner'].browse(j["id"])
                 if self._est_client_a_collecter(partner, jour):
                     jobs_du_jour.append(j)
-
-            if not jobs_du_jour:
-                continue
+                    if not jobs_du_jour:
+                        continue
 
             # 2. Organiser par clusters
             for cluster_id in set(j["cluster"] for j in jobs_du_jour):
@@ -247,7 +246,16 @@ class CollectePlanningMensuel(models.Model):
                             created += 1
                             affectes.append(job)
                         index = solution.Value(routing.NextVar(index))
-                jobs_restants = [j for j in jobs_restants if j not in affectes]
+                obligatoires_du_jour = []
+                for j in affectes:
+                    partner = self.env['res.partner'].browse(j["id"])
+                    if self._est_client_a_collecter(partner, jour):
+                        obligatoires_du_jour.append(j)
+
+                jobs_restants = [
+                    j for j in jobs_restants
+                    if j not in obligatoires_du_jour
+                ]
 
         if planning_lines:
             self.write({'line_ids': planning_lines, 'state': 'done'})

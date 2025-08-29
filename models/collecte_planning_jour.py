@@ -69,7 +69,7 @@ class DailyVehiclePlanning(models.Model):
 
         # 1) Planning mensuel
         dom = [('annee', '=', selected_date.year), ('mois', '=', str(selected_date.month))]
-        monthly = self.env['collecte.planning_mensuelle'].search(dom + [('state', '=', 'done')], limit=1)
+        monthly = self.env['collecte.planning_mensuel'].search(dom + [('state', '=', 'done')], limit=1)
         if not monthly:
             monthly = self.env['collecte.planning_mensuel'].search(dom, limit=1)
         if not monthly:
